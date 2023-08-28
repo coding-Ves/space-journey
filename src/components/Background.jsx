@@ -1,35 +1,62 @@
-import { Environment, Sphere } from '@react-three/drei';
+import { Environment, Sphere, Stars } from '@react-three/drei';
 import { Gradient, LayerMaterial } from 'lamina';
 
-import * as Three from 'three';
+import * as THREE from 'three';
 
 const Background = () => {
-    // const texture = new Three.TextureLoader().load(
-    //     '/public/milky-way-full-stars-space.jpg'
-    // );
-    // texture.wrapS = Three.RepeatWrapping;
-    // texture.wrapT = Three.RepeatWrapping;
-    // texture.repeat.set(4, 4);
-
+    const colorA = '#000';
+    const colorB = '#141E30';
+    const start = 0.5;
+    const end = -0.5;
     return (
         <>
-            <Environment preset='night' />
-            <Sphere scale={[100, 100, 100]} rotation-y={Math.PI / 2}>
-                <LayerMaterial
-                    lighting='physical'
-                    transmission={1}
-                    side={Three.BackSide}
-                >
+            <Stars
+                radius={7}
+                depth={70}
+                count={10000}
+                factor={2}
+                saturation={12}
+                fade
+                speed={0.9}
+            />
+            <Stars
+                radius={5}
+                depth={50}
+                count={10000}
+                factor={1}
+                saturation={1}
+                fade
+                speed={0.6}
+            />
+
+            <Sphere scale={[500, 500, 500]} rotation-y={Math.PI / 2}>
+                <LayerMaterial color={'#ffffff'} side={THREE.BackSide}>
                     <Gradient
-                        colorA={'white'}
-                        colorB={'#080c51'}
+                        colorA={colorA}
+                        colorB={colorB}
                         axes={'y'}
-                        start={0}
-                        end={-0.7}
+                        start={start}
+                        end={end}
                     />
-                    {/* <Texture map={texture} axes={'y'} start={0} end={-0.9} /> */}
                 </LayerMaterial>
             </Sphere>
+            <Environment resolution={256}>
+                <Sphere
+                    scale={[100, 100, 100]}
+                    rotation-y={Math.PI / 6}
+                    rotation-x={Math.PI}
+                >
+                    <LayerMaterial color={'#ffffff'} side={THREE.BackSide}>
+                        <Gradient
+                            colorA={colorA}
+                            colorB={colorB}
+                            axes={'y'}
+                            start={start}
+                            end={end}
+                        />
+                    </LayerMaterial>
+                </Sphere>
+            </Environment>
         </>
     );
 };

@@ -8,7 +8,7 @@ function App() {
             <Canvas camera={{ position: [0, 0, 5], fov: 30 }}>
                 {/* eslint-disable-next-line react/no-unknown-property */}
                 <color attach='background' args={['#ececec']} />
-                <ScrollControls pages={5} daping={0.3}>
+                <ScrollControls pages={8} damping={0.8}>
                     <Experience />
                 </ScrollControls>
             </Canvas>
