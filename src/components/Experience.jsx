@@ -1,4 +1,4 @@
-import { Float, PerspectiveCamera, Text, useScroll } from '@react-three/drei';
+import { Float, PerspectiveCamera, useScroll } from '@react-three/drei';
 import { useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import Background from './Background';
@@ -16,6 +16,8 @@ import { PlanetThree } from './Planets/PlanetThree';
 import { PlanetFour } from './Planets/PlanetFour';
 import { PlanetFive } from './Planets/PlanetFive';
 import { Group } from 'three';
+import { TextSection } from './TextSection';
+import { Vector3 } from 'three';
 
 const LINE_NB_POINTS = 1000;
 const CURVE_DISTANCE = 10;
@@ -27,6 +29,7 @@ const Experience = () => {
     const cameraGroup = useRef();
     const scroll = useScroll();
     const rocketship = useRef();
+    const camera = useRef();
 
     const curve = useMemo(() => {
         return new THREE.CatmullRomCurve3(
@@ -39,10 +42,12 @@ const Experience = () => {
                 new THREE.Vector3(8, -2, -5 * CURVE_DISTANCE),
                 new THREE.Vector3(-11, 0, -6 * CURVE_DISTANCE),
                 // new THREE.Vector3(-7, 0, -7 * CURVE_DISTANCE),
-                new THREE.Vector3(0, 0, -8 * CURVE_DISTANCE),
+                new THREE.Vector3(5, 0, -8 * CURVE_DISTANCE),
                 new THREE.Vector3(0, 0, -9 * CURVE_DISTANCE),
-                new THREE.Vector3(0, 0, -10 * CURVE_DISTANCE),
-                new THREE.Vector3(0, 0, -11 * CURVE_DISTANCE),
+                new THREE.Vector3(0, -2, -10 * CURVE_DISTANCE),
+                new THREE.Vector3(0, -1, -11 * CURVE_DISTANCE),
+                new THREE.Vector3(0, 0, -12 * CURVE_DISTANCE),
+                new THREE.Vector3(0, 0, -13 * CURVE_DISTANCE),
             ],
             false,
             'catmullrom',
@@ -58,7 +63,56 @@ const Experience = () => {
         return shape;
     }, [curve]);
 
+    const textSections = useMemo(() => {
+        return [
+            {
+                position: new Vector3(-1, 1.5, -3),
+                subtitle: `Ground Control\n to Major Tom`,
+                maxWidth: '0.2',
+            },
+            {
+                position: new Vector3(3.2, -1.6, -13),
+                title: 'Commencing countdown ',
+                subtitle: `engines on`,
+            },
+            {
+                position: new Vector3(-10, -1, -27),
+                title: `You've really made the grade`,
+                subtitle: `And the papers want to know whose shirts you wear`,
+            },
+            {
+                position: new Vector3(7, -0.4, -52),
+                title: "I'm stepping through the door",
+            },
+            {
+                position: new Vector3(8, -0.7, -51),
+                subtitle: `And I'm floating in a most peculiar way`,
+            },
+            {
+                position: new Vector3(-4.4, -3, -69),
+                title: 'Far above\nthe world',
+            },
+            {
+                position: new Vector3(-2, 0, -108),
+                title: `Here I am floating 'round my tin can`,
+                subtitle: `Far above the Moon \nPlanet Earth is blue\nAnd there's nothing I can do...`,
+            },
+        ];
+    }, []);
+
     useFrame((_state, delta) => {
+        if (window.innerWidth > window.innerHeight) {
+            // LANDSCAPE
+            camera.current.fov = 40;
+            camera.current.position.y = 0.2;
+            camera.current.position.z = 1.7;
+        } else {
+            // PORTRAIT
+            camera.current.fov = 90;
+            camera.current.position.z = 1.2;
+            camera.current.position.y = 0.4;
+        }
+
         const scrollOffset = Math.max(0, scroll.offset);
 
         const curPoint = curve.getPoint(scrollOffset);
@@ -142,12 +196,13 @@ const Experience = () => {
             <group ref={cameraGroup}>
                 <Background />
                 <PerspectiveCamera
+                    ref={camera}
                     position={[0, 0.1, 1.1]}
-                    fox={40}
+                    fov={30}
                     makeDefault
                 />
 
-                {/* ROCKETSHIT  */}
+                {/* ROCKETSHIP  */}
                 <group ref={rocketship}>
                     <Float
                         floatIntensity={1}
@@ -166,76 +221,9 @@ const Experience = () => {
             </group>
 
             {/* TEXT */}
-            <group position={[-2.8, 0.5, -5]}>
-                <Text
-                    color='white'
-                    anchorX={'left'}
-                    anchorY='middle'
-                    fontSize={0.33}
-                    maxWidth={1.9}
-                >
-                    Stars are falling
-                </Text>
-            </group>
-            <group position={[4, -1, -16]}>
-                <Text
-                    color='white'
-                    anchorX={'left'}
-                    anchorY='middle'
-                    fontSize={0.5}
-                    maxWidth={5}
-                >
-                    from the sky and stuff
-                </Text>
-            </group>
-            <group position={[-10, 1, -22]}>
-                <Text
-                    color='white'
-                    anchorX={'left'}
-                    anchorY='middle'
-                    fontSize={0.5}
-                    maxWidth={5}
-                >
-                    in space and stuff
-                </Text>
-            </group>
-
-            <group position={[7, -5, -46]}>
-                <Text
-                    color='white'
-                    anchorX={'left'}
-                    anchorY='middle'
-                    fontSize={0.5}
-                    maxWidth={2}
-                >
-                    a vacuum fills the void
-                </Text>
-            </group>
-
-            <group position={[-5, 2, -72]}>
-                <Text
-                    color='white'
-                    anchorX={'left'}
-                    anchorY='middle'
-                    fontSize={0.5}
-                    maxWidth={2}
-                >
-                    in space and stuff
-                </Text>
-            </group>
-
-            <group position={[-1, 0, -100]}>
-                <Text
-                    color='white'
-                    anchorX={'left'}
-                    anchorY='middle'
-                    fontSize={0.5}
-                    maxWidth={2}
-                    fade
-                >
-                    and on and on and on we travel
-                </Text>
-            </group>
+            {textSections.map((textSection, index) => (
+                <TextSection {...textSection} key={index} />
+            ))}
 
             {/* LINE */}
             <group position-y={-2}>
@@ -250,11 +238,7 @@ const Experience = () => {
                             },
                         ]}
                     />
-                    <meshStandardMaterial
-                        color={'white'}
-                        opacity={0.5}
-                        transparent
-                    />
+                    <meshStandardMaterial color={'white'} opacity={0.2} />
                 </mesh>
             </group>
 
@@ -289,8 +273,8 @@ const Experience = () => {
             <PlanetOne scale={[1.5, 1.5, 1.5]} position={[-8, -8, -35]} />
 
             <Saturn
-                scale={[6.5, 6.5, 6.5]}
-                position={[9, 6, -44]}
+                scale={[6.7, 6.7, 6.7]}
+                position={[9, 3.5, -44]}
                 rotation-z={0.3}
             />
 
@@ -301,11 +285,22 @@ const Experience = () => {
                 rotation-x={0.6}
             />
 
-            <Moon
-                scale={[4, 4, 4]}
-                rotation-y={Math.PI / 9}
-                position={[17, 4, -80]}
-                rotation={[2, 65, 1]}
+            <Asteroid
+                scale={[0.5, 0.5, 0.5]}
+                rotation={[5, 9, 7]}
+                position={[2, 1, -69]}
+            />
+
+            <Asteroid
+                scale={[2.3, 2.3, 2.3]}
+                rotation={[52, 1, 0]}
+                position={[-6, -4, -75]}
+            />
+
+            <Asteroid
+                scale={[1.9, 1.9, 1.9]}
+                rotation={[5, 9, 7]}
+                position={[-10, 3, -74]}
             />
 
             <PlanetFour
@@ -321,10 +316,24 @@ const Experience = () => {
                 rotation-y={3}
                 rotation-x={3.1}
             />
+
+            <Asteroid
+                scale={[1, 1, 1]}
+                rotation={[-5, -9, 4]}
+                position={[-4, 2, -78]}
+            />
+
             <Asteroid
                 scale={[1.4, 1.4, 1.4]}
                 rotation={[3, -2, -25]}
                 position={[3, 1.8, -80]}
+            />
+
+            <Moon
+                scale={[4, 4, 4]}
+                rotation-y={Math.PI / 9}
+                position={[17, 4, -80]}
+                rotation={[2, 65, 1]}
             />
 
             <Asteroid
@@ -348,35 +357,11 @@ const Experience = () => {
                 position={[-1, -5, -85]}
             />
 
-            <Asteroid
-                scale={[1, 1, 1]}
-                rotation={[-5, -9, 4]}
-                position={[-4, 2, -78]}
-            />
-
             <Moon
                 scale={[0.5, 0.5, 0.5]}
                 rotation-y={Math.PI / 9}
                 position={[-5, -2, -78]}
                 rotation={[29, -65, -12]}
-            />
-
-            <Asteroid
-                scale={[2.3, 2.3, 2.3]}
-                rotation={[52, 1, 0]}
-                position={[-6, -4, -74]}
-            />
-
-            <Asteroid
-                scale={[1.9, 1.9, 1.9]}
-                rotation={[5, 9, 7]}
-                position={[-10, 3, -74]}
-            />
-
-            <Asteroid
-                scale={[0.5, 0.5, 0.5]}
-                rotation={[5, 9, 7]}
-                position={[2, 1, -69]}
             />
 
             <Neptune
@@ -398,8 +383,8 @@ const Experience = () => {
             />
 
             <DeathStar
-                scale={[50, 50, 50]}
-                position={[0, 9, -97]}
+                scale={[60, 60, 60]}
+                position={[1, 4.4, -95]}
                 rotation={[0.5, 0, 3.2]}
             />
         </>
