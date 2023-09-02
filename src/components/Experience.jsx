@@ -1,6 +1,8 @@
 import { Float, PerspectiveCamera, useScroll } from '@react-three/drei';
+import { useFrame } from '@react-three/fiber';
 import { useMemo, useRef } from 'react';
 import * as THREE from 'three';
+import { Group, Vector3 } from 'three';
 import Background from './Background';
 import { Asteroid } from './Planets/Asteroid';
 import { DeathStar } from './Planets/DeathStar';
@@ -9,15 +11,12 @@ import { Mars } from './Planets/Mars';
 import { Moon } from './Planets/Moon';
 import { Neptune } from './Planets/Neptune';
 import { PlanetOne } from './Planets/PlanOne';
+import { PlanetFive } from './Planets/PlanetFive';
+import { PlanetFour } from './Planets/PlanetFour';
+import { PlanetThree } from './Planets/PlanetThree';
 import { Saturn } from './Planets/Saturn';
 import { Rocketship } from './Rocketship';
-import { useFrame } from '@react-three/fiber';
-import { PlanetThree } from './Planets/PlanetThree';
-import { PlanetFour } from './Planets/PlanetFour';
-import { PlanetFive } from './Planets/PlanetFive';
-import { Group } from 'three';
 import { TextSection } from './TextSection';
-import { Vector3 } from 'three';
 
 const LINE_NB_POINTS = 1000;
 const CURVE_DISTANCE = 10;
@@ -61,6 +60,7 @@ const Experience = () => {
         shape.lineTo(0, 0.3);
 
         return shape;
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [curve]);
 
     const textSections = useMemo(() => {
